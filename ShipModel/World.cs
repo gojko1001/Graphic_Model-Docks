@@ -137,7 +137,7 @@ namespace ShipModel
             gl.Color(1f, 0f, 0f);
             // Model sencenja na flat (konstantno)
             gl.ShadeModel(OpenGL.GL_FLAT);
-            gl.Enable(OpenGL.GL_DEPTH_TEST | OpenGL.GL_CULL_FACE);    // TODO 1: Testiranje dubine i sakrivanje nevidljivih povrsina
+            gl.Enable(OpenGL.GL_DEPTH_TEST);    // TODO 1: Testiranje dubine i sakrivanje nevidljivih povrsina
             m_scene.LoadScene();
             m_scene.Initialize();
         }
@@ -151,6 +151,9 @@ namespace ShipModel
 
             const float SUBSTRATE_W = 3000;
             const float SUBSTRATE_L = 2000;
+            const float PORT_W = 900;
+            const float PORT_H = 15;
+            const float PORT_L = 60;
             List<float> pillTransX = new List<float> { 200, -200, -600, -1000, -1400 };
             List<float> pillTransZ = new List<float> { 230, 370 };
 
@@ -163,8 +166,8 @@ namespace ShipModel
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
             gl.Rotate(m_yRotation, 0.0f, 1.0f, 0.0f);
 
-            m_scene.Draw();                                 // TODO 2: Ucitati model
-            DrawPort(gl, m_width, m_height);
+            gl.Enable(OpenGL.GL_CULL_FACE);
+            DrawPort(gl, PORT_W, PORT_L, PORT_H);
             DrawRamp(gl);
             for (int i = 0; i < pillTransX.Count; i++)      // TODO 3.3a: Iscrtavanje niza stubova mola
             {
@@ -172,6 +175,8 @@ namespace ShipModel
                 DrawPillar(gl, pillTransX[i], pillTransZ[1]);
             }
             DrawFloor(gl, SUBSTRATE_W, SUBSTRATE_L);
+            gl.Disable(OpenGL.GL_CULL_FACE);
+            m_scene.Draw();                                 // TODO 2: Ucitati model
             gl.PopMatrix();
             DrawText(gl, m_width, m_height);
             
@@ -195,11 +200,11 @@ namespace ShipModel
         /// <summary>
         /// TODO 3.2: Iscrtavanje mola
         /// </summary>
-        public static void DrawPort(OpenGL gl, int m_width, int m_height)
+        public static void DrawPort(OpenGL gl, float width, float length, float height)
         {
             gl.PushMatrix();
             gl.Translate(-600f, 120, 300f);
-            gl.Scale(900f, 15f, 60f);   
+            gl.Scale(width, height, length);   
             gl.Color(0.4f, 0.310f, 0.310);
             Cube port = new Cube();
             port.Render(gl, RenderMode.Render);
