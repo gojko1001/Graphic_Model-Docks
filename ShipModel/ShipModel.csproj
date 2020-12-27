@@ -121,6 +121,7 @@
     <None Include="Dependencies\SharpGL.WPF.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="appIcon.png" />
     <Content Include="AssimpLib\Assimp32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
