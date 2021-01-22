@@ -138,6 +138,11 @@ namespace ShipModel
             // Model sencenja na flat (konstantno)
             gl.ShadeModel(OpenGL.GL_FLAT);
             gl.Enable(OpenGL.GL_DEPTH_TEST);    // TODO 1: Testiranje dubine i sakrivanje nevidljivih povrsina
+
+            gl.Enable(OpenGL.GL_LIGHTING);
+            gl.Enable(OpenGL.GL_COLOR_MATERIAL);
+            gl.Enable(OpenGL.GL_TEXTURE_2D);
+
             m_scene.LoadScene();
             m_scene.Initialize();
         }
@@ -175,7 +180,6 @@ namespace ShipModel
                 DrawPillar(gl, pillTransX[i], pillTransZ[1]);
             }
             DrawFloor(gl, SUBSTRATE_W, SUBSTRATE_L);
-            gl.Disable(OpenGL.GL_CULL_FACE);
             m_scene.Draw();                                 // TODO 2: Ucitati model
             gl.PopMatrix();
             DrawText(gl, m_width, m_height);
@@ -222,9 +226,10 @@ namespace ShipModel
             gl.Scale(20f, 170f, 20f);
             gl.Rotate(-90f, 1, 0, 0);
             gl.Color(0.2f, 0.2f, 0.2f);
-            Cylinder pillar = new Cylinder();
-
-            pillar.TopRadius = 1;
+            Cylinder pillar = new Cylinder
+            {
+                TopRadius = 1
+            };
             pillar.CreateInContext(gl);
             pillar.Render(gl, RenderMode.Render);
             gl.PopMatrix();
