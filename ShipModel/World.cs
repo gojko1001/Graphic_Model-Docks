@@ -53,9 +53,13 @@ namespace ShipModel
         public string[] m_textureFiles = { "..//..//textures//waterTexture.jpg", "..//..//textures//metalTexture.jpg", "..//..//textures//woodTexture.jpg" };
 
         // lightYellow
-        public float ambLightR = 1f;
-        public float ambLightG = 1f;
-        public float ambLightB = 0.878f;
+        public float difLightR = 0.6f;
+        public float difLightG = 0.6f;
+        public float difLightB = 0.6f;
+
+        public float pillarTranslateY = 0.0f;
+
+        public float rampRotateX = 10.0f;
         
         #endregion Atributi
 
@@ -186,6 +190,8 @@ namespace ShipModel
             SetUpLighting(gl);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
+            //gl.LookAt(1000, 100, -300, -100, 0, -5000, 1, 0, 0);  TODO 10: Postaviti pogled sa leve strane od gore
+
             gl.PushMatrix();
             gl.Translate(0.0f, 0.0f, -m_sceneDistance);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
@@ -295,7 +301,7 @@ namespace ShipModel
         public void DrawPillar(OpenGL gl, float transX, float transZ)
         {
             gl.PushMatrix();
-            gl.Translate(transX, 0, transZ);
+            gl.Translate(transX, pillarTranslateY, transZ);
             gl.Scale(20f, 170f, 20f);
             gl.Rotate(-90f, 1, 0, 0);
 
@@ -318,9 +324,11 @@ namespace ShipModel
         public void DrawRamp(OpenGL gl)
         {
             gl.PushMatrix();
-            gl.Rotate(10f, 1, 0f, 0f);
-            gl.Translate(0f, 180, 160f);
+            gl.Translate(0f, 140, 240f);
+            gl.Rotate(rampRotateX, 1, 0f, 0f);
+            gl.Translate(0f, 0f, -60f);
             gl.Scale(30f, 8f, 90f);
+            
             gl.Color(0.5f, 0.5f, 0.5f);
             gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureMaterials.METAL]);
             Cube ramp = new Cube();
@@ -432,8 +440,8 @@ namespace ShipModel
 
             float[] light0pos = new float[] { -20.0f, 200.0f, 0f, 1.0f };
 
-            float[] light0ambient = new float[] { ambLightR, ambLightG, ambLightB, 1.0f };
-            float[] light0diffuse = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
+            float[] light0ambient = new float[] { 1.0f, 1.0f, 0.878f, 1.0f };
+            float[] light0diffuse = new float[] { difLightR, difLightG, difLightB, 1.0f };
             float[] light0specular = new float[] { 0.0f, 0.0f, 0.0f, 1.0f };
 
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light0pos);

@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using SharpGL.SceneGraph;
 using Microsoft.Win32;
-
+using System.Windows.Media;
 
 namespace ShipModel
 {
@@ -78,7 +78,7 @@ namespace ShipModel
         {
             switch (e.Key)
             {
-                case Key.F10: this.Close(); break;
+                case Key.Escape: Close(); break;
                 case Key.W: m_world.RotationX -= 5.0f; break;
                 case Key.S: m_world.RotationX += 5.0f; break;
                 case Key.A: m_world.RotationY -= 5.0f; break;
@@ -104,6 +104,32 @@ namespace ShipModel
                         }
                     }
                     break;
+            }
+        }
+        //TODO 10.1: Podizanje/spusatnje rampe
+        private void RampPosition_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(m_world != null)
+            {
+                m_world.rampRotateX = (float)RampPosition.Value;
+            }
+        }
+
+        // TODO 10.2: Promena reflektorske svetlosti
+        private void LightSource_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
+        {
+            Color color = (Color)LightSource.SelectedColor;
+            m_world.difLightR = (color.R / 255.0f);
+            m_world.difLightG = (color.G / 255.0f);
+            m_world.difLightB = (color.B / 255.0f);
+        }
+
+        // TODO 10.3: Promeranje stubova gore/dole
+        private void PillarPosition_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(m_world != null)
+            {
+                m_world.pillarTranslateY = (float)PillarPosition.Value;
             }
         }
     }
