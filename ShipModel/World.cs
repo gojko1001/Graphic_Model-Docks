@@ -16,7 +16,7 @@ namespace ShipModel
     /// </summary>
     public class World : IDisposable
     {
-        #region Atributi
+        #region Attributes
 
         /// <summary>
         ///	 Scena koja se prikazuje.
@@ -51,12 +51,13 @@ namespace ShipModel
         private enum TextureMaterials { WATER = 0, METAL, WOOD };
         private readonly int m_textureCount = Enum.GetNames(typeof(TextureMaterials)).Length;
         private readonly uint[] m_textures = null;
-        public string[] m_textureFiles = { "..//..//textures//waterTexture.jpg", "..//..//textures//metalTexture.jpg", "..//..//textures//woodTexture.jpg" };
+        public string[] m_textureFiles = { "..//..//textures//waterTexture.jpg", 
+                                           "..//..//textures//metalTexture.jpg", 
+                                           "..//..//textures//woodTexture.jpg" };
 
-        // lightYellow
-        public float difLightR = 0.6f;
-        public float difLightG = 0.6f;
-        public float difLightB = 0.6f;
+        public float refLightR = 1f;
+        public float refLightG = 1f;
+        public float refLightB = 0f;
 
         public float pillarTranslateY = 0.0f;
 
@@ -133,7 +134,7 @@ namespace ShipModel
 
         #endregion Properties
 
-        #region Konstruktori
+        #region Constructors
 
         /// <summary>
         ///  Konstruktor klase World.
@@ -157,7 +158,7 @@ namespace ShipModel
 
         #endregion Konstruktori
 
-        #region Metode
+        #region Methods
 
         /// <summary>
         ///  Korisnicka inicijalizacija i podesavanje OpenGL parametara.
@@ -166,15 +167,18 @@ namespace ShipModel
         {
             gl.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             //gl.Color(1f, 0f, 0f);
-            // Model sencenja na flat (konstantno)
-            gl.ShadeModel(OpenGL.GL_FLAT);
+            
+            gl.ShadeModel(OpenGL.GL_FLAT);      // Model sencenja na flat (konstantno)
             gl.Enable(OpenGL.GL_DEPTH_TEST);    // TODO 1: Testiranje dubine i sakrivanje nevidljivih povrsina
 
-            gl.Enable(OpenGL.GL_LIGHTING);
             gl.Enable(OpenGL.GL_COLOR_MATERIAL);    // TODO 5: ukljucivanje color tracking mehanizma
+            gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);   // TODO 5: Ambijentalna i difuzna komponenta
             gl.Enable(OpenGL.GL_TEXTURE_2D);
 
             LoadTextures(gl);
+
+            SetupLighting(gl);
+            SetupReflectorLight(gl);
 
             m_scene.LoadScene();
             m_scene.Initialize();
@@ -198,8 +202,6 @@ namespace ShipModel
 
             #endregion parameters
 
-            gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);   // TODO 5: Ambijentalna i difuzna komponenta
-            SetupLighting(gl);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
             //gl.LookAt(1000, 100, -300, -100, 0, -5000, 1, 0, 0);  TODO 10: Postaviti pogled sa leve strane od gore
@@ -230,7 +232,7 @@ namespace ShipModel
         /// TODO 2: Ucitavanje modela
         /// </summary>
         public void DrawBoat(OpenGL gl, float translateX)
-        {
+        {    
             gl.BindTexture(OpenGL.GL_TEXTURE_2D, 0);
             //gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_ADD);  // TODO 14
             gl.Rotate(boatRotateX, 0f, 0f);
@@ -459,27 +461,43 @@ namespace ShipModel
         /// <summary>
         private void SetupLighting(OpenGL gl)
         {
-            gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);
+            gl.Enable(OpenGL.GL_LIGHTING);
+            gl.Enable(OpenGL.GL_LIGHT0);
+
             float[] globalAmbiental = { 0.1f, 0.1f, 0.1f, 1.0f };
             gl.LightModel(OpenGL.GL_LIGHT_MODEL_AMBIENT, globalAmbiental);
 
-            float[] light0pos = new float[] { 0.0f, 200.0f, 0f, 1.0f };
+            float[] light0pos = new float[] { 0.0f, 1000.0f, 0f, 1.0f };
 
-            float[] light0ambient = new float[] { 1.0f, 1.0f, 0.878f, 1.0f };
-            float[] light0diffuse = new float[] { difLightR, difLightG, difLightB, 1.0f };
+            float[] lightYellow = new float[] { 1.0f, 1.0f, 0.878f, 1.0f };
+            float[] light0diffuse = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
             float[] light0specular = new float[] { 0.0f, 0.0f, 0.0f, 1.0f };
 
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light0pos);
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_AMBIENT, light0ambient);
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, light0specular);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_AMBIENT, lightYellow);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, lightYellow);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, lightYellow);
 
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 25.0f); // TODO 13:Reflektivni izvor svetlosti
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 180f);    // Tackasti izvor svetlosti
 
+            gl.Enable(OpenGL.GL_NORMALIZE);     // Ukljuceivanje normalizacije
+        }
+
+        private void SetupReflectorLight(OpenGL gl)
+        {
             gl.Enable(OpenGL.GL_LIGHTING);
-            gl.Enable(OpenGL.GL_LIGHT0);
-            gl.Enable(OpenGL.GL_NORMALIZE);
+            gl.Enable(OpenGL.GL_LIGHT1);
+            float[] yellow = { refLightR, refLightG, refLightB, 1.0f };
+            float[] light1diffuse = { refLightR, refLightG, refLightB, 1.0f };
+            float[] position = new float[] { -300f, 500f, 120f, 1.0f };
+            float[] direction = new float[] { 0.0f, -1.0f, 0.0f, 1.0f };
 
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_POSITION, position);
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_DIRECTION, direction);
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_AMBIENT, yellow);
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_DIFFUSE, yellow);
+
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_CUTOFF, 25.0f);   // TODO 13:Reflektivni izvor svetlosti   
         }
 
         // TODO 15: Animacija
@@ -528,7 +546,7 @@ namespace ShipModel
 
         #endregion Metode
 
-        #region IDisposable metode
+        #region IDisposable methods
 
         /// <summary>
         ///  Implementacija IDisposable interfejsa.

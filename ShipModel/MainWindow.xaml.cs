@@ -14,7 +14,7 @@ namespace ShipModel
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region Atributi
+        #region Attributes
 
         /// <summary>
         ///	 Instanca OpenGL "sveta" - klase koja je zaduzena za iscrtavanje koriscenjem OpenGL-a.
@@ -23,7 +23,7 @@ namespace ShipModel
 
         #endregion Atributi
 
-        #region Konstruktori
+        #region Constructors
 
         public MainWindow()
         {
@@ -33,7 +33,9 @@ namespace ShipModel
             // Kreiranje OpenGL sveta
             try
             {
-                m_world = new World(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..\\..\\3D Models\\FishingBoat"), "Boat.obj", (int)openGLControl.ActualWidth, (int)openGLControl.ActualHeight, openGLControl.OpenGL);
+                m_world = new World(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), 
+                    "..\\..\\3D Models\\FishingBoat"), "Boat.obj", (int)openGLControl.ActualWidth, 
+                    (int)openGLControl.ActualHeight, openGLControl.OpenGL);
             }
             catch (Exception e)
             {
@@ -69,7 +71,7 @@ namespace ShipModel
         /// Handles the Resized event of the openGLControl1 control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="args">The <see cref="SharpGL.SceneGraph.OpenGLEventArgs"/> instance containing the event data.</param>
+        /// <param name="args">The <see cref="OpenGLEventArgs"/> instance containing the event data.</param>
         private void OpenGLControl_Resized(object sender, OpenGLEventArgs args)
         {
             m_world.Resize(args.OpenGL, (int)openGLControl.ActualWidth, (int)openGLControl.ActualHeight);
@@ -92,21 +94,26 @@ namespace ShipModel
                     break;
                 case Key.A: m_world.RotationY -= 5.0f; break;
                 case Key.D: m_world.RotationY += 5.0f; break;
-                case Key.Add: m_world.SceneDistance -= 700.0f; break;
-                case Key.Subtract: m_world.SceneDistance += 700.0f; break;
+                case Key.Add:
+                    if (m_world.SceneDistance > 700)
+                        m_world.SceneDistance -= 700.0f;
+                    break;
+                case Key.Subtract:
+                    if (m_world.SceneDistance < 6300)
+                        m_world.SceneDistance += 700.0f;
+                    break;
                 case Key.C:
                     DisableControls();
                     m_world.InitAnimation();
                     break;
                 case Key.F2:
                     OpenFileDialog opfModel = new OpenFileDialog();
-                    bool result = (bool) opfModel.ShowDialog();
-                    if (result)
+                    if ((bool)opfModel.ShowDialog())
                     {
-
                         try
                         {
-                            World newWorld = new World(Directory.GetParent(opfModel.FileName).ToString(), Path.GetFileName(opfModel.FileName), (int)openGLControl.Width, (int)openGLControl.Height, openGLControl.OpenGL);
+                            World newWorld = new World(Directory.GetParent(opfModel.FileName).ToString(), Path.GetFileName(
+                                opfModel.FileName), (int)openGLControl.Width, (int)openGLControl.Height, openGLControl.OpenGL);
                             m_world.Dispose();
                             m_world = newWorld;
                             m_world.Initialize(openGLControl.OpenGL);
@@ -144,10 +151,12 @@ namespace ShipModel
         // TODO 10.2: Promena reflektorske svetlosti
         private void LightSource_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
+            if (m_world == null)
+                return;
             Color color = (Color)LightSource.SelectedColor;
-            m_world.difLightR = (color.R / 255.0f);
-            m_world.difLightG = (color.G / 255.0f);
-            m_world.difLightB = (color.B / 255.0f);
+            m_world.refLightR = (color.R / 255.0f);
+            m_world.refLightG = (color.G / 255.0f);
+            m_world.refLightB = (color.B / 255.0f);
         }
 
         // TODO 10.3: Promeranje stubova gore/dole

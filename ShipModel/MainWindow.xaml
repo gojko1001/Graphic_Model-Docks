@@ -8,20 +8,24 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
+            <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
 
         <ToolBar>
-            <Label Content="Pomeranje rampe:"/>
+            <Label Content="Move ramp:"/>
             <Slider Name="RampPosition" Minimum="10" Maximum="80" Width="100" VerticalAlignment="Center" ValueChanged="RampPosition_ValueChanged"/>
-            <Label Content="Pomeranje stubova:"/>
+            <Label Content="Move pillars:"/>
             <Slider Name="PillarPosition" Minimum="0" Maximum="100" Width="100" VerticalAlignment="Center" ValueChanged="PillarPosition_ValueChanged"/>
-            <Label Content="Boja svetlosnog izvora:"/>
-            <xctk:ColorPicker Name="LightSource" DisplayColorAndName="True" MinWidth="100" SelectedColorChanged="LightSource_SelectedColorChanged"/>
+            <Label Content="Reflector light color:"/>
+            <xctk:ColorPicker Name="LightSource" SelectedColor="Yellow" DisplayColorAndName="True" MinWidth="100" SelectedColorChanged="LightSource_SelectedColorChanged"/>
         </ToolBar>
         <!-- The OpenGL control provides a OpenGL drawing surface. -->
         <sharpGL:OpenGLControl 
             Name="openGLControl" OpenGLDraw="OpenGLControl_OpenGLDraw"  Grid.Row="1"
             OpenGLInitialized="OpenGLControl_OpenGLInitialized" Resized="OpenGLControl_Resized"
             DrawFPS="True" RenderContextType="FBO" FrameRate="10"/>
+        <StatusBar Grid.Row="2">
+            <StatusBarItem Content="C - Start sinking animation" HorizontalAlignment="Right" />
+        </StatusBar>
     </Grid>
 </Window>
