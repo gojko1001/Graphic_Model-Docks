@@ -40,6 +40,7 @@ namespace ShipModel
                 MessageBox.Show("Neuspesno kreirana instanca OpenGL sveta. Poruka greške: " + e.Message, "Poruka", MessageBoxButton.OK);
                 Close();
             }
+            m_world.mainWindow = this;
         }
 
         #endregion Konstruktori
@@ -48,7 +49,7 @@ namespace ShipModel
         /// Handles the OpenGLDraw event of the openGLControl1 control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="args">The <see cref="SharpGL.SceneGraph.OpenGLEventArgs"/> instance containing the event data.</param>
+        /// <param name="args">The <see cref="OpenGLEventArgs"/> instance containing the event data.</param>
         private void OpenGLControl_OpenGLDraw(object sender, OpenGLEventArgs args)
         {
             m_world.Draw(args.OpenGL);
@@ -58,7 +59,7 @@ namespace ShipModel
         /// Handles the OpenGLInitialized event of the openGLControl1 control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="args">The <see cref="SharpGL.SceneGraph.OpenGLEventArgs"/> instance containing the event data.</param>
+        /// <param name="args">The <see cref="OpenGLEventArgs"/> instance containing the event data.</param>
         private void OpenGLControl_OpenGLInitialized(object sender, OpenGLEventArgs args)
         {
             m_world.Initialize(args.OpenGL);
@@ -76,6 +77,8 @@ namespace ShipModel
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (m_world.animationGoing)
+                return;
             switch (e.Key)
             {
                 case Key.Escape: Close(); break;
@@ -84,13 +87,17 @@ namespace ShipModel
                         m_world.RotationX += 5.0f;
                     break;
                 case Key.S:
-                    if (m_world.RotationX > 0 )
+                    if (m_world.RotationX > 5 )
                         m_world.RotationX -= 5.0f;
                     break;
                 case Key.A: m_world.RotationY -= 5.0f; break;
                 case Key.D: m_world.RotationY += 5.0f; break;
                 case Key.Add: m_world.SceneDistance -= 700.0f; break;
                 case Key.Subtract: m_world.SceneDistance += 700.0f; break;
+                case Key.C:
+                    DisableControls();
+                    m_world.InitAnimation();
+                    break;
                 case Key.F2:
                     OpenFileDialog opfModel = new OpenFileDialog();
                     bool result = (bool) opfModel.ShowDialog();
@@ -112,13 +119,26 @@ namespace ShipModel
                     break;
             }
         }
+
+        private void DisableControls()
+        {
+            RampPosition.IsEnabled = false;
+            PillarPosition.IsEnabled = false;
+            LightSource.IsEnabled = false;
+        }
+
+        public void EnableControls()
+        {
+            RampPosition.IsEnabled = true;
+            PillarPosition.IsEnabled = true;
+            LightSource.IsEnabled = true;
+        }
+
         //TODO 10.1: Podizanje/spusatnje rampe
         private void RampPosition_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if(m_world != null)
-            {
                 m_world.rampRotateX = (float)RampPosition.Value;
-            }
         }
 
         // TODO 10.2: Promena reflektorske svetlosti
@@ -134,9 +154,7 @@ namespace ShipModel
         private void PillarPosition_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if(m_world != null)
-            {
                 m_world.pillarTranslateY = (float)PillarPosition.Value;
-            }
         }
     }
 }

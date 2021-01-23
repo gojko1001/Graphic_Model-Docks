@@ -7,6 +7,7 @@ using SharpGL.SceneGraph.Quadrics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Tao.OpenGl;
+using System.Windows.Threading;
 
 namespace ShipModel
 {
@@ -49,7 +50,7 @@ namespace ShipModel
 
         private enum TextureMaterials { WATER = 0, METAL, WOOD };
         private readonly int m_textureCount = Enum.GetNames(typeof(TextureMaterials)).Length;
-        private uint[] m_textures = null;
+        private readonly uint[] m_textures = null;
         public string[] m_textureFiles = { "..//..//textures//waterTexture.jpg", "..//..//textures//metalTexture.jpg", "..//..//textures//woodTexture.jpg" };
 
         // lightYellow
@@ -60,7 +61,18 @@ namespace ShipModel
         public float pillarTranslateY = 0.0f;
 
         public float rampRotateX = 10.0f;
-        
+
+        private DispatcherTimer animationTimer;
+        public bool animationGoing = false;
+        public int rotationCount = 0;
+
+        public float boatTranslateX = 0f;
+        public float boatTranslateY = 0f;
+
+        public float boatRotateX = 0f;
+
+        public MainWindow mainWindow;
+
         #endregion Atributi
 
         #region Properties
@@ -177,7 +189,7 @@ namespace ShipModel
 
             const float SUBSTRATE_W = 3000;
             const float SUBSTRATE_L = 2000;
-            const float SUBSTRATE_H = 100;
+            const float SUBSTRATE_H = 300;
             const float PORT_W = 900;
             const float PORT_H = 15;
             const float PORT_L = 60;
@@ -187,7 +199,7 @@ namespace ShipModel
             #endregion parameters
 
             gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);   // TODO 5: Ambijentalna i difuzna komponenta
-            SetUpLighting(gl);
+            SetupLighting(gl);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
             //gl.LookAt(1000, 100, -300, -100, 0, -5000, 1, 0, 0);  TODO 10: Postaviti pogled sa leve strane od gore
@@ -199,18 +211,14 @@ namespace ShipModel
 
             gl.Enable(OpenGL.GL_CULL_FACE);
             DrawPort(gl, PORT_W, PORT_L, PORT_H);
-            DrawRamp(gl);
+            DrawRamp(gl, rampRotateX);
             for (int i = 0; i < pillTransX.Count; i++)      // TODO 3.3a: Iscrtavanje niza stubova mola
             {
                 DrawPillar(gl, pillTransX[i], pillTransZ[0]);
                 DrawPillar(gl, pillTransX[i], pillTransZ[1]);
             }
             DrawWater(gl, SUBSTRATE_W, SUBSTRATE_L, SUBSTRATE_H);
-            
-            gl.BindTexture(OpenGL.GL_TEXTURE_2D, 0);
-            //gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_ADD);
-            m_scene.Draw();                                // TODO 2: Ucitati model
-            //gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_MODULATE);
+            DrawBoat(gl, boatTranslateX);
             gl.PopMatrix();
             DrawText(gl, m_width, m_height);
             
@@ -218,6 +226,20 @@ namespace ShipModel
         }
 
         #region Scene Setup
+        /// <summary>
+        /// TODO 2: Ucitavanje modela
+        /// </summary>
+        public void DrawBoat(OpenGL gl, float translateX)
+        {
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, 0);
+            //gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_ADD);  // TODO 14
+            gl.Rotate(boatRotateX, 0f, 0f);
+            gl.Translate(translateX, boatTranslateY, 0f);
+            m_scene.Draw();
+            //gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_MODULATE);
+
+        }
+
         /// <summary>
         /// TODO 3.1: Iscrtavanje podloge
         /// </summary>
@@ -324,11 +346,11 @@ namespace ShipModel
         /// <summary>
         /// TODO 3.4: Funkcija iscrtava rampu za prelazak na brod
         /// <summary>
-        public void DrawRamp(OpenGL gl)
+        public void DrawRamp(OpenGL gl, float rotateX)
         {
             gl.PushMatrix();
             gl.Translate(0f, 140, 240f);
-            gl.Rotate(rampRotateX, 1, 0f, 0f);
+            gl.Rotate(rotateX, 1, 0f, 0f);
             gl.Translate(0f, 0f, -60f);
             gl.Scale(30f, 8f, 90f);
             
@@ -435,13 +457,13 @@ namespace ShipModel
         /// <summary>
         /// TODO 6: Podesavanje osvetljenja
         /// <summary>
-        private void SetUpLighting(OpenGL gl)
+        private void SetupLighting(OpenGL gl)
         {
             gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);
             float[] globalAmbiental = { 0.1f, 0.1f, 0.1f, 1.0f };
             gl.LightModel(OpenGL.GL_LIGHT_MODEL_AMBIENT, globalAmbiental);
 
-            float[] light0pos = new float[] { -20.0f, 200.0f, 0f, 1.0f };
+            float[] light0pos = new float[] { 0.0f, 200.0f, 0f, 1.0f };
 
             float[] light0ambient = new float[] { 1.0f, 1.0f, 0.878f, 1.0f };
             float[] light0diffuse = new float[] { difLightR, difLightG, difLightB, 1.0f };
@@ -452,13 +474,61 @@ namespace ShipModel
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, light0specular);
 
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 25.0f); // Reflektivni izvor svetlosti
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 25.0f); // TODO 13:Reflektivni izvor svetlosti
 
             gl.Enable(OpenGL.GL_LIGHTING);
             gl.Enable(OpenGL.GL_LIGHT0);
             gl.Enable(OpenGL.GL_NORMALIZE);
 
         }
+
+        // TODO 15: Animacija
+        public void InitAnimation()
+        {
+            animationGoing = true;
+            rotationCount = 0;
+            boatRotateX = 0;
+            rampRotateX = 80f;
+            boatTranslateX = 1000f;
+            animationTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(20),
+            };
+            animationTimer.Tick += new EventHandler(UpdateAnimation);
+            animationTimer.Start();
+        }
+
+        private void UpdateAnimation(object sender, EventArgs e)
+        {
+            if (boatTranslateX > 0)
+                boatTranslateX -= 30f;
+            else if (rampRotateX > 10f)
+                    rampRotateX -= 10f;
+            else if (rotationCount <= 3)
+            {
+                    if (rotationCount % 2 == 0 && boatRotateX < 30)
+                            boatRotateX += 10;
+                        else if (rotationCount % 2 == 1 && boatRotateX > -30)
+                            boatRotateX -= 10;
+                        else rotationCount++;
+            }
+            else if (boatTranslateY > -700)
+                    boatTranslateY -= 40;
+            else
+            {
+                rampRotateX = 10f;
+                boatTranslateX = 0f;
+                boatTranslateY = 0f;
+                boatRotateX = 0f;
+                animationGoing = false;
+                mainWindow.EnableControls();
+                animationTimer.Stop();
+            }
+        }
+
+        #endregion Metode
+
+        #region IDisposable metode
 
         /// <summary>
         ///  Implementacija IDisposable interfejsa.
@@ -470,10 +540,6 @@ namespace ShipModel
                 m_scene.Dispose();
             }
         }
-
-        #endregion Metode
-
-        #region IDisposable metode
 
         /// <summary>
         ///  Dispose metoda.
