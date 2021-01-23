@@ -79,8 +79,14 @@ namespace ShipModel
             switch (e.Key)
             {
                 case Key.Escape: Close(); break;
-                case Key.W: m_world.RotationX -= 5.0f; break;
-                case Key.S: m_world.RotationX += 5.0f; break;
+                case Key.W:
+                    if (m_world.RotationX < 60)
+                        m_world.RotationX += 5.0f;
+                    break;
+                case Key.S:
+                    if (m_world.RotationX > 0 )
+                        m_world.RotationX -= 5.0f;
+                    break;
                 case Key.A: m_world.RotationY -= 5.0f; break;
                 case Key.D: m_world.RotationY += 5.0f; break;
                 case Key.Add: m_world.SceneDistance -= 700.0f; break;

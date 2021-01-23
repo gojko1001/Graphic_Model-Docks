@@ -206,8 +206,11 @@ namespace ShipModel
                 DrawPillar(gl, pillTransX[i], pillTransZ[1]);
             }
             DrawWater(gl, SUBSTRATE_W, SUBSTRATE_L, SUBSTRATE_H);
+            
             gl.BindTexture(OpenGL.GL_TEXTURE_2D, 0);
+            //gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_ADD);
             m_scene.Draw();                                // TODO 2: Ucitati model
+            //gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_MODULATE);
             gl.PopMatrix();
             DrawText(gl, m_width, m_height);
             
@@ -449,7 +452,7 @@ namespace ShipModel
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, light0specular);
 
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 180.0f); // Tackasti izvor svetlosti
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 25.0f); // Reflektivni izvor svetlosti
 
             gl.Enable(OpenGL.GL_LIGHTING);
             gl.Enable(OpenGL.GL_LIGHT0);
