@@ -74,7 +74,7 @@ namespace ShipModel
 
         public MainWindow mainWindow;
 
-        #endregion Atributi
+        #endregion Attributes
 
         #region Properties
 
@@ -178,7 +178,6 @@ namespace ShipModel
             LoadTextures(gl);
 
             SetupLighting(gl);
-            SetupReflectorLight(gl);
 
             m_scene.LoadScene();
             m_scene.Initialize();
@@ -204,8 +203,8 @@ namespace ShipModel
 
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
-            //gl.LookAt(1000, 100, -300, -100, 0, -5000, 1, 0, 0);  TODO 10: Postaviti pogled sa leve strane od gore
-
+            SetupReflectorLight(gl);
+            
             gl.PushMatrix();
             gl.Translate(0.0f, 0.0f, -m_sceneDistance);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
@@ -302,7 +301,6 @@ namespace ShipModel
             gl.TexCoord(0, 1);
             gl.Vertex(width / 2, 20, length / 2);
             
-            // TODO: down?
             gl.End();
         }
 
@@ -470,13 +468,13 @@ namespace ShipModel
             float[] light0pos = new float[] { 0.0f, 1000.0f, 0f, 1.0f };
 
             float[] lightYellow = new float[] { 1.0f, 1.0f, 0.878f, 1.0f };
-            float[] light0diffuse = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
+            float[] light0diffuse = new float[] { refLightR, refLightG, refLightB, 1.0f };
             float[] light0specular = new float[] { 0.0f, 0.0f, 0.0f, 1.0f };
 
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light0pos);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_AMBIENT, lightYellow);
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, lightYellow);
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, lightYellow);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, light0specular);
 
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 180f);    // Tackasti izvor svetlosti
 
@@ -544,7 +542,7 @@ namespace ShipModel
             }
         }
 
-        #endregion Metode
+        #endregion Methods
 
         #region IDisposable methods
 
@@ -568,6 +566,6 @@ namespace ShipModel
             GC.SuppressFinalize(this);
         }
 
-        #endregion IDisposable metode
+        #endregion IDisposable methods
     }
 }
