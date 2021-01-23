@@ -7,8 +7,8 @@
         
         <!-- The OpenGL control provides a OpenGL drawing surface. -->
         <sharpGL:OpenGLControl 
-            Name="openGLControl" OpenGLDraw="openGLControl_OpenGLDraw" 
-            OpenGLInitialized="openGLControl_OpenGLInitialized" Resized="openGLControl_Resized"
+            Name="openGLControl" OpenGLDraw="OpenGLControl_OpenGLDraw" 
+            OpenGLInitialized="OpenGLControl_OpenGLInitialized" Resized="OpenGLControl_Resized"
             DrawFPS="True" RenderContextType="FBO" FrameRate="10"/>
         
     </Grid>

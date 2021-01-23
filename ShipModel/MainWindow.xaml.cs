@@ -33,12 +33,12 @@ namespace ShipModel
             // Kreiranje OpenGL sveta
             try
             {
-                m_world = new World(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "3D Models\\FishingBoat"), "Boat.obj", (int)openGLControl.ActualWidth, (int)openGLControl.ActualHeight, openGLControl.OpenGL);
+                m_world = new World(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..\\..\\3D Models\\FishingBoat"), "Boat.obj", (int)openGLControl.ActualWidth, (int)openGLControl.ActualHeight, openGLControl.OpenGL);
             }
             catch (Exception e)
             {
                 MessageBox.Show("Neuspesno kreirana instanca OpenGL sveta. Poruka greške: " + e.Message, "Poruka", MessageBoxButton.OK);
-                this.Close();
+                Close();
             }
         }
 
@@ -49,7 +49,7 @@ namespace ShipModel
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="args">The <see cref="SharpGL.SceneGraph.OpenGLEventArgs"/> instance containing the event data.</param>
-        private void openGLControl_OpenGLDraw(object sender, OpenGLEventArgs args)
+        private void OpenGLControl_OpenGLDraw(object sender, OpenGLEventArgs args)
         {
             m_world.Draw(args.OpenGL);
         }
@@ -59,7 +59,7 @@ namespace ShipModel
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="args">The <see cref="SharpGL.SceneGraph.OpenGLEventArgs"/> instance containing the event data.</param>
-        private void openGLControl_OpenGLInitialized(object sender, OpenGLEventArgs args)
+        private void OpenGLControl_OpenGLInitialized(object sender, OpenGLEventArgs args)
         {
             m_world.Initialize(args.OpenGL);
         }
@@ -69,7 +69,7 @@ namespace ShipModel
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="args">The <see cref="SharpGL.SceneGraph.OpenGLEventArgs"/> instance containing the event data.</param>
-        private void openGLControl_Resized(object sender, OpenGLEventArgs args)
+        private void OpenGLControl_Resized(object sender, OpenGLEventArgs args)
         {
             m_world.Resize(args.OpenGL, (int)openGLControl.ActualWidth, (int)openGLControl.ActualHeight);
         }

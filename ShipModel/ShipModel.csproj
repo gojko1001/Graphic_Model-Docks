@@ -66,6 +66,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Tao.OpenGl">
+      <HintPath>AssimpLib\TaoFramework\Tao.OpenGl.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -123,6 +126,9 @@
     <None Include="Dependencies\SharpGL.WPF.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="textures\metalTexture.jpg" />
+    <Resource Include="textures\waterTexture.jpg" />
+    <Resource Include="textures\woodTexture.jpg" />
     <Resource Include="appIcon.png" />
     <Resource Include="3D Models\FishingBoat\boat_ao.bmp" />
     <Resource Include="3D Models\FishingBoat\boat_diffuse.bmp" />
@@ -139,9 +145,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="3D Models\FishingBoat\textures\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

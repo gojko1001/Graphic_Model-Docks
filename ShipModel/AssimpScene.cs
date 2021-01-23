@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <file>AssimpScene.cs</file>
-// <copyright>Grupa za Grafiku, Interakciju i Multimediju 2013.</copyright>
-// <author>Srđan Mihić, Aleksandar Josić</author>
-// <summary>Klasa enkapsulira programski kod za ucitavanje modela pomocu na AssimpNet biblioteke i prikazivanje modela uz uslonac na SharpGL biblioteku.</summary>
-// -----------------------------------------------------------------------
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Assimp;
 using System.IO;
@@ -31,7 +25,7 @@ namespace ShipModel
         /// <summary>
         ///	 OpenGL referenca koju dobijamo iz aplikacije
         /// </summary>
-        private OpenGL gl;
+        private readonly OpenGL gl;
 
         /// <summary>
         ///	 Display lista preko koje iscrtavamo model
@@ -41,12 +35,12 @@ namespace ShipModel
         /// <summary>
         ///	 Putanja do foldera u kojem se nalaze podaci o sceni
         /// </summary>
-        private String m_scenePath;
+        private readonly string m_scenePath;
 
         /// <summary>
         ///	 Naziv fajla u kojem se nalaze podaci o sceni
         /// </summary>
-        private String m_sceneFileName;
+        private readonly string m_sceneFileName;
 
         /// <summary>
         ///	 Identifikator tekstura.
@@ -56,7 +50,7 @@ namespace ShipModel
         /// <summary>
         ///	 Mapiranje teksture na njen identifikator.
         /// </summary>
-        private Dictionary<TextureSlot, uint> m_texMappings;
+        private readonly Dictionary<TextureSlot, uint> m_texMappings;
 
         #endregion
 
@@ -80,11 +74,11 @@ namespace ShipModel
         /// </summary>
         /// <param name="scenePath">Putanja do foldera u kojem se nalaze podaci o sceni.</param>
         /// <param name="sceneFileName">Naziv fajla u kojem se nalaze podaci o sceni.</param>
-        public AssimpScene(String scenePath, String sceneFileName, OpenGL gl)
+        public AssimpScene(string scenePath, string sceneFileName, OpenGL gl)
         {
-            this.m_scenePath = scenePath;
-            this.m_sceneFileName = sceneFileName;
-            this.m_texMappings = new Dictionary<TextureSlot, uint>();
+            m_scenePath = scenePath;
+            m_sceneFileName = sceneFileName;
+            m_texMappings = new Dictionary<TextureSlot, uint>();
             this.gl = gl;
         }
 
@@ -93,7 +87,7 @@ namespace ShipModel
         /// </summary>
         ~AssimpScene()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
 
         #endregion
