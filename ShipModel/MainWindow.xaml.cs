@@ -17,20 +17,19 @@ namespace ShipModel
         #region Attributes
 
         /// <summary>
-        ///	 Instanca OpenGL "sveta" - klase koja je zaduzena za iscrtavanje koriscenjem OpenGL-a.
+        ///	OpenGL "world" instance - class for drawing scene using OpenGL.
         /// </summary>
         World m_world = null;
 
-        #endregion Atributi
+        #endregion Attributes
 
         #region Constructors
 
         public MainWindow()
         {
-            // Inicijalizacija komponenti
             InitializeComponent();
 
-            // Kreiranje OpenGL sveta
+            // Creating OpenGL world 
             try
             {
                 m_world = new World(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), 
@@ -39,13 +38,13 @@ namespace ShipModel
             }
             catch (Exception e)
             {
-                MessageBox.Show("Neuspesno kreirana instanca OpenGL sveta. Poruka greške: " + e.Message, "Poruka", MessageBoxButton.OK);
+                MessageBox.Show("OpenGL world creation unsuccessful. Error message: " + e.Message, "Warning", MessageBoxButton.OK);
                 Close();
             }
             m_world.mainWindow = this;
         }
 
-        #endregion Konstruktori
+        #endregion Constructors
 
         /// <summary>
         /// Handles the OpenGLDraw event of the openGLControl1 control.
@@ -79,7 +78,7 @@ namespace ShipModel
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (m_world.animationGoing)
+            if (m_world.animationGoing)     // Disable key interaction while animation is going
                 return;
             switch (e.Key)
             {
@@ -103,7 +102,7 @@ namespace ShipModel
                         m_world.SceneDistance += 700.0f;
                     break;
                 case Key.C:
-                    DisableControls();
+                    DisableControls();          // Disable Wpf controls while animation is going
                     m_world.InitAnimation();
                     break;
                 case Key.F2:
@@ -120,7 +119,7 @@ namespace ShipModel
                         }
                         catch (Exception exp)
                         {
-                            MessageBox.Show("Neuspesno kreirana instanca OpenGL sveta:\n" + exp.Message, "GRESKA", MessageBoxButton.OK );
+                            MessageBox.Show("OpenGL world creation unsuccessful. Error message: " + exp.Message, "Warning", MessageBoxButton.OK);
                         }
                     }
                     break;
@@ -141,15 +140,15 @@ namespace ShipModel
             LightSource.IsEnabled = true;
         }
 
-        //TODO 10.1: Podizanje/spusatnje rampe
+        //TODO 10.1: Ramp control
         private void RampPosition_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if(m_world != null)
                 m_world.rampRotateX = (float)RampPosition.Value;
         }
 
-        // TODO 10.2: Promena reflektorske svetlosti
-        private void LightSource_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
+        // TODO 10.2: Reflector light control
+        private void LightSource_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
             if (m_world == null)
                 return;
@@ -159,7 +158,7 @@ namespace ShipModel
             m_world.refLightB = (color.B / 255.0f);
         }
 
-        // TODO 10.3: Promeranje stubova gore/dole
+        // TODO 10.3: Pillar position control
         private void PillarPosition_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if(m_world != null)

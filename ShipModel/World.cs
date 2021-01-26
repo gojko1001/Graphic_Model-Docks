@@ -12,39 +12,39 @@ using System.Windows.Threading;
 namespace ShipModel
 {
     /// <summary>
-    ///  Klasa enkapsulira OpenGL kod i omogucava njegovo iscrtavanje i azuriranje.
+    /// OpenGL class for drawing and updating scene.
     /// </summary>
     public class World : IDisposable
     {
         #region Attributes
 
         /// <summary>
-        ///	 Scena koja se prikazuje.
+        ///	Scene
         /// </summary>
         private AssimpScene m_scene;
 
         /// <summary>
-        ///	 Ugao rotacije sveta oko X ose.
+        ///	X-Axis rotation
         /// </summary>
         private float m_xRotation = 10.0f;
 
         /// <summary>
-        ///	 Ugao rotacije sveta oko Y ose.
+        ///	Y-Axis rotation
         /// </summary>
         private float m_yRotation = 0.0f;
 
         /// <summary>
-        ///	 Udaljenost scene od kamere.
+        ///	Distance from camera
         /// </summary>
         private float m_sceneDistance = 3500.0f;
 
         /// <summary>
-        ///	 Sirina OpenGL kontrole u pikselima.
+        ///	OpenGL control width (pixel).
         /// </summary>
         private int m_width;
 
         /// <summary>
-        ///	 Visina OpenGL kontrole u pikselima.
+        ///	OpenGL control height (pixel).
         /// </summary>
         private int m_height;
 
@@ -54,24 +54,32 @@ namespace ShipModel
         public string[] m_textureFiles = { "..//..//textures//waterTexture.jpg", 
                                            "..//..//textures//metalTexture.jpg", 
                                            "..//..//textures//woodTexture.jpg" };
-
+        /// <summary>
+        ///	Reflector light color.
+        /// </summary>
         public float refLightR = 1f;
         public float refLightG = 1f;
         public float refLightB = 0f;
 
+        /// <summary>
+        ///	Wpf controls variables
+        /// </summary>
         public float pillarTranslateY = 0.0f;
-
         public float rampRotateX = 10.0f;
 
+        /// <summary>
+        ///	Animation variables
+        /// </summary>
         private DispatcherTimer animationTimer;
         public bool animationGoing = false;
         public int rotationCount = 0;
-
         public float boatTranslateX = 0f;
         public float boatTranslateY = 0f;
-
         public float boatRotateX = 0f;
 
+        /// <summary>
+        ///	Main window instance (for accessing its functions).
+        /// </summary>
         public MainWindow mainWindow;
 
         #endregion Attributes
@@ -161,18 +169,18 @@ namespace ShipModel
         #region Methods
 
         /// <summary>
-        ///  Korisnicka inicijalizacija i podesavanje OpenGL parametara.
+        /// User initialization and OpenGL parameters setup.
         /// </summary>
         public void Initialize(OpenGL gl)
         {
             gl.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             //gl.Color(1f, 0f, 0f);
             
-            gl.ShadeModel(OpenGL.GL_FLAT);      // Model sencenja na flat (konstantno)
-            gl.Enable(OpenGL.GL_DEPTH_TEST);    // TODO 1: Testiranje dubine i sakrivanje nevidljivih povrsina
+            gl.ShadeModel(OpenGL.GL_FLAT);      // Flat shading model (constant)
+            gl.Enable(OpenGL.GL_DEPTH_TEST);    // TODO 1: Depth test & hidding invisible areas
 
-            gl.Enable(OpenGL.GL_COLOR_MATERIAL);    // TODO 5: ukljucivanje color tracking mehanizma
-            gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);   // TODO 5: Ambijentalna i difuzna komponenta
+            gl.Enable(OpenGL.GL_COLOR_MATERIAL);    // TODO 5: Enable color tracking mechanism
+            gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);   // TODO 5: Ambient and Diffuse component
             gl.Enable(OpenGL.GL_TEXTURE_2D);
 
             LoadTextures(gl);
@@ -184,10 +192,11 @@ namespace ShipModel
         }
 
         /// <summary>
-        ///  Iscrtavanje OpenGL kontrole.
+        /// OpenGL Draw Control. Function is called each time something on the scene changes.
         /// </summary>
         public void Draw(OpenGL gl)
         {
+            // Parameters for simpler scene initialization
             #region parameters
 
             const float SUBSTRATE_W = 3000;
@@ -213,7 +222,7 @@ namespace ShipModel
             gl.Enable(OpenGL.GL_CULL_FACE);
             DrawPort(gl, PORT_W, PORT_L, PORT_H);
             DrawRamp(gl, rampRotateX);
-            for (int i = 0; i < pillTransX.Count; i++)      // TODO 3.3a: Iscrtavanje niza stubova mola
+            for (int i = 0; i < pillTransX.Count; i++)      // TODO 3.3a: Draw multiple port pillars
             {
                 DrawPillar(gl, pillTransX[i], pillTransZ[0]);
                 DrawPillar(gl, pillTransX[i], pillTransZ[1]);
@@ -223,12 +232,12 @@ namespace ShipModel
             gl.PopMatrix();
             DrawText(gl, m_width, m_height);
             
-            gl.Flush(); // Kraj iscrtavanja
+            gl.Flush();
         }
 
         #region Scene Setup
         /// <summary>
-        /// TODO 2: Ucitavanje modela
+        /// TODO 2: Load model
         /// </summary>
         public void DrawBoat(OpenGL gl, float translateX)
         {    
@@ -242,7 +251,7 @@ namespace ShipModel
         }
 
         /// <summary>
-        /// TODO 3.1: Iscrtavanje podloge
+        /// TODO 3.1: Draw water
         /// </summary>
         public void DrawWater(OpenGL gl, float width, float length, float height)
         {
@@ -305,7 +314,7 @@ namespace ShipModel
         }
 
         /// <summary>
-        /// TODO 3.2: Iscrtavanje mola
+        /// TODO 3.2: Draw ship port
         /// </summary>
         public void DrawPort(OpenGL gl, float width, float length, float height)
         {
@@ -321,7 +330,7 @@ namespace ShipModel
 
 
         /// <summary>
-        /// TODO 3.3: Funkcija iscrtava jedan stub mola
+        /// TODO 3.3: Draw one port pillar
         /// <summary>
         public void DrawPillar(OpenGL gl, float transX, float transZ)
         {
@@ -344,7 +353,7 @@ namespace ShipModel
         }
 
         /// <summary>
-        /// TODO 3.4: Funkcija iscrtava rampu za prelazak na brod
+        /// TODO 3.4: Draw ship ramp
         /// <summary>
         public void DrawRamp(OpenGL gl, float rotateX)
         {
@@ -362,7 +371,7 @@ namespace ShipModel
         }
         
         /// <summary>
-        /// TODO 4: Ispis teksta projekta: Donji desni ugao, crvena boja, Bold, Ariel, 14px
+        /// TODO 4: Draw project info text
         /// <summary>
         public void DrawText(OpenGL gl, int m_width, int m_height)
         {
@@ -407,13 +416,13 @@ namespace ShipModel
         #endregion Scene Setup
 
         /// <summary>
-        /// Podesava viewport i projekciju za OpenGL kontrolu.
+        /// Setup viewport & projection for OpenGL control.
         /// </summary>
         public void Resize(OpenGL gl, int width, int height)
         {
             m_width = width;
             m_height = height;
-            gl.Viewport(0, 0, m_width, m_height);       // TODO 1: Viewport preko celog prozora
+            gl.Viewport(0, 0, m_width, m_height);       // TODO 1: Viewport over whole window
             gl.MatrixMode(OpenGL.GL_PROJECTION);
             gl.LoadIdentity();
             gl.Perspective(45f, (double)width / height, 1.0f, 20000f); // TODO 1: fov = 45, near = 1
@@ -422,20 +431,20 @@ namespace ShipModel
         }
 
         /// <summary>
-        /// Ucitavanje tekstura u m_textures varijablu.
+        /// Load textures into m_textures variable.
         /// </summary>
         private void LoadTextures(OpenGL gl)
         {
-            gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_MODULATE); // TODO 7: Nacin stapanja
+            gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_MODULATE); // TODO 7: Fusion mode
             gl.GenTextures(m_textureCount, m_textures);
 
             for (int i = 0; i < m_textureCount; ++i)
             {
-                // Pridruzi teksturu odgovarajucem identifikatoru
+                // Assign texture to its identifier
                 gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[i]);
 
                 Bitmap image = new Bitmap(m_textureFiles[i]);
-                // rotiramo sliku zbog koordinantog sistema opengl-a
+                // Rotate image because of OpenGl coordinate system
                 image.RotateFlip(RotateFlipType.RotateNoneFlipY);
                 Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
                 BitmapData imageData = image.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
@@ -443,10 +452,10 @@ namespace ShipModel
                 gl.Build2DMipmaps(OpenGL.GL_TEXTURE_2D, (int)OpenGL.GL_RGBA8, image.Width, image.Height, OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, imageData.Scan0);
 
 
-                //TODO 7 - wrapping, filteri, stapanje teksture sa materijalom
-                gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_REPEAT);      //Wraping tekstura
+                //TODO 7 - wrapping, filters, texture fusion with material
+                gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_REPEAT);      //Texture wraping
                 gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_REPEAT);
-                gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_LINEAR);// Linear Filtering
+                gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_LINEAR);  //Linear Filtering
                 gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_LINEAR);
 
                 image.UnlockBits(imageData);
@@ -455,7 +464,7 @@ namespace ShipModel
         }
 
         /// <summary>
-        /// TODO 6: Podesavanje osvetljenja
+        /// TODO 6: Light setup
         /// <summary>
         private void SetupLighting(OpenGL gl)
         {
@@ -468,7 +477,7 @@ namespace ShipModel
             float[] light0pos = new float[] { 0.0f, 1000.0f, 0f, 1.0f };
 
             float[] lightYellow = new float[] { 1.0f, 1.0f, 0.878f, 1.0f };
-            float[] light0diffuse = new float[] { refLightR, refLightG, refLightB, 1.0f };
+            float[] light0diffuse = new float[] { 1f, 1f, 0f, 1.0f };
             float[] light0specular = new float[] { 0.0f, 0.0f, 0.0f, 1.0f };
 
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light0pos);
@@ -476,9 +485,9 @@ namespace ShipModel
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, light0specular);
 
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 180f);    // Tackasti izvor svetlosti
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 180f);    // Dotted light source
 
-            gl.Enable(OpenGL.GL_NORMALIZE);     // Ukljuceivanje normalizacije
+            gl.Enable(OpenGL.GL_NORMALIZE);     // Enable normalization
         }
 
         private void SetupReflectorLight(OpenGL gl)
@@ -486,7 +495,6 @@ namespace ShipModel
             gl.Enable(OpenGL.GL_LIGHTING);
             gl.Enable(OpenGL.GL_LIGHT1);
             float[] yellow = { refLightR, refLightG, refLightB, 1.0f };
-            float[] light1diffuse = { refLightR, refLightG, refLightB, 1.0f };
             float[] position = new float[] { -300f, 500f, 120f, 1.0f };
             float[] direction = new float[] { 0.0f, -1.0f, 0.0f, 1.0f };
 
@@ -495,20 +503,20 @@ namespace ShipModel
             gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_AMBIENT, yellow);
             gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_DIFFUSE, yellow);
 
-            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_CUTOFF, 25.0f);   // TODO 13:Reflektivni izvor svetlosti   
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_CUTOFF, 25.0f);   // TODO 13: Reflector light source   
         }
 
-        // TODO 15: Animacija
+        // TODO 15: Animation
         public void InitAnimation()
         {
             animationGoing = true;
-            rotationCount = 0;
+            rotationCount = 0;                  // Set parameters to starting animation position
             boatRotateX = 0;
             rampRotateX = 80f;
             boatTranslateX = 1000f;
             animationTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(20),
+                Interval = TimeSpan.FromMilliseconds(20),       // Call UpdateAnimation each 20 miliseconds
             };
             animationTimer.Tick += new EventHandler(UpdateAnimation);
             animationTimer.Start();
@@ -516,11 +524,11 @@ namespace ShipModel
 
         private void UpdateAnimation(object sender, EventArgs e)
         {
-            if (boatTranslateX > 0)
+            if (boatTranslateX > 0)             // Move boat to the starting position
                 boatTranslateX -= 30f;
-            else if (rampRotateX > 10f)
+            else if (rampRotateX > 10f)         // Lower ramp on the ship
                     rampRotateX -= 10f;
-            else if (rotationCount <= 3)
+            else if (rotationCount <= 3)        // rotationCount - number of times that ship lean on side
             {
                     if (rotationCount % 2 == 0 && boatRotateX < 30)
                             boatRotateX += 10;
@@ -528,11 +536,11 @@ namespace ShipModel
                             boatRotateX -= 10;
                         else rotationCount++;
             }
-            else if (boatTranslateY > -700)
+            else if (boatTranslateY > -700)     // Lower boat into the sea until it sinks completely
                     boatTranslateY -= 40;
             else
             {
-                rampRotateX = 10f;
+                rampRotateX = 10f;              // Reset scene parameters
                 boatTranslateX = 0f;
                 boatTranslateY = 0f;
                 boatRotateX = 0f;

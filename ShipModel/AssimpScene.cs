@@ -15,7 +15,7 @@ namespace ShipModel
     /// </summary>
     public class AssimpScene : IDisposable
     {
-        #region Atributi
+        #region Attributes
 
         /// <summary>
         ///	 Scena koja se prikazuje.
@@ -30,7 +30,7 @@ namespace ShipModel
         /// <summary>
         ///	 Display lista preko koje iscrtavamo model
         /// </summary>
-        private DisplayList lista;
+        private DisplayList list;
 
         /// <summary>
         ///	 Putanja do foldera u kojem se nalaze podaci o sceni
@@ -67,7 +67,7 @@ namespace ShipModel
 
         #endregion
 
-        #region Konstruktori
+        #region Constructors
 
         /// <summary>
         ///  Konstruktor klase AssimpScene.
@@ -92,14 +92,14 @@ namespace ShipModel
 
         #endregion
 
-        #region Metode
+        #region Methods
 
         /// <summary>
         ///  Iscrtavanje scene.
         /// </summary>
         public void Draw()
         {
-            lista.Call(gl);
+            list.Call(gl);
         }
 
         /// <summary>
@@ -130,9 +130,9 @@ namespace ShipModel
         public void Initialize()
         {
             LoadTextures();
-            lista = new DisplayList();
-            lista.Generate(gl);
-            lista.New(gl, DisplayList.DisplayListMode.Compile);
+            list = new DisplayList();
+            list.Generate(gl);
+            list.New(gl, DisplayList.DisplayListMode.Compile);
                 gl.PushAttrib(OpenGL.GL_ENABLE_BIT);
                 gl.PushAttrib(OpenGL.GL_TEXTURE_BIT);
                 gl.PushAttrib(OpenGL.GL_POLYGON_BIT);
@@ -145,7 +145,7 @@ namespace ShipModel
                 gl.PopAttrib();
                 gl.PopAttrib();
                 gl.PopAttrib();
-            lista.End(gl);
+            list.End(gl);
         }
 
         /// <summary>
@@ -243,9 +243,7 @@ namespace ShipModel
 
             // Rekurzivno scrtavanje podcvorova datog cvora.
             for (int i = 0; i < node.ChildCount; i++)
-            {
                 RenderNode(node.Children[i]);
-            }
             gl.PopMatrix();
         }
 
@@ -257,19 +255,14 @@ namespace ShipModel
         {
             int texCount = 0;
             foreach (Material material in m_scene.Materials)
-            {
                 foreach (TextureSlot texSlot in material.GetAllTextures())
-                {
                     texCount++;
-                }
-            }
 
             m_texIds = new uint[texCount];
             gl.GenTextures(texCount, m_texIds);
 
             int index = 0;
             foreach (Material material in m_scene.Materials)
-            {
                 foreach (TextureSlot texSlot in material.GetAllTextures())
                 {
                     m_texMappings[texSlot] = m_texIds[index];
@@ -307,7 +300,6 @@ namespace ShipModel
 
                     index++;
                 }
-            }
         }
 
         /// <summary>
@@ -339,6 +331,11 @@ namespace ShipModel
             gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_SHININESS, shininess * strength);
         }
 
+        #endregion methods
+
+        #region IDisposable methods
+
+
         /// <summary>
         ///  Metoda za oslobadjanje resursa.
         /// </summary>
@@ -346,24 +343,20 @@ namespace ShipModel
         {
             if (disposing)
             {
-                lista.Delete(gl);
+                list.Delete(gl);
                 gl.DeleteTextures(m_texIds.Length, m_texIds);
             }
         }
-
-        #endregion Private metode
-
-        #region IDisposable metode
 
         /// <summary>
         ///  Implementacija IDisposable interfejsa.
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        #endregion IDisposable metode
+        #endregion IDisposable methods
     }
 }
